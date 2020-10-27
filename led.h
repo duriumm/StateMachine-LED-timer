@@ -1,9 +1,17 @@
-#ifndef _LED_H_
-#define _LED_H_
+#ifndef LED_H_
+#define LED_H_
 
-void LED_init(void);
+#include "stateHandler.h"
 
-uint8_t simple_ramp(void);
+void init_led(int indexInRegistry);
 
-#endif // _LED_H_
+void activate_led(int indexInRegistry);
 
+void deactivate_led(int ledToDeactivate);
+
+void toggle_led(int ledToToggle);
+
+void change_led_ON_or_OFF_based_on_LED_state(int ledToUse, LED_STATES currentLedState);
+
+
+#endif
