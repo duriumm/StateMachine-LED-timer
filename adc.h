@@ -6,6 +6,4 @@
 
 void init_single_conversion_mode_ADC();
 
-int ADCsingleREAD(uint8_t adctouse);
-
 #endif

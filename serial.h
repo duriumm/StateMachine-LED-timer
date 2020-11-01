@@ -17,11 +17,7 @@ char uart_getchar(void);
 
 void uart_echo(void);
 
-//void uart_check_if_string_is_ON_or_OFF( unsigned char * stringToCheck, STATES *currentEnumState);
-
 void uart_get_string_from_user(unsigned char * stringToCheck);
-
-//void uart_print_currentEnumState(STATES currentEnumState);
 
 void print_state_of_LED(LED_STATES currentLedState);
 

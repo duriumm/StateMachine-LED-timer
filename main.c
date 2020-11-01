@@ -14,8 +14,10 @@
 
 #define redLed PD6
 volatile unsigned int previousReadADCvalue = 0;
-LED_STATES currentLedState = OFF_STATE; // State of led set to OFF state at beginning.
+LED_STATES currentLedState = LED_PULSATING_STATE;    // State of led set to LED_PULSATING_STATE state at beginning.
+BUTTON_STATES currentButtonState = BUTTON_OFF_STATE; // State of led set to OFF state at beginning.
 
+volatile unsigned int isInterrupted = 0;             // volatile "bool" so we can change it inside our timer2 interrupt ISR
 
 int main (void) {
 	
@@ -28,20 +30,29 @@ int main (void) {
   init_single_conversion_mode_ADC(); // Initialize single conversion mode for ADC
 
   while(1){
-	
+
+    if(isInterrupted == 1){          // Check if isInterrupted == 1 (To make things happen outside interrupt instead of inside)
+      change_led_behaviour_based_on_LED_state(redLed, currentLedState, &previousReadADCvalue);// We change the LED behaviour to 
+                                                                                              // pulse/potMeter/blink/off depending on State                                                                                            
+      isInterrupted = 0;    // Set isInterrupted to 0                                                           
+    }   
   }
   return 0;
 }
 
 /* Once this timer function is done we head over to the ADC_vect below */
 ISR(TIMER2_COMPA_vect){
-  ADCSRA |= (1 << ADSC);           // Start the ADC conversion
-  OCR0A = previousReadADCvalue;    // Set  OCR0A "led strength" to previousReadADCvalue
+
+  currentLedState = change_led_state_after_button_press(redLed, currentLedState); // After a registered button press is made we increment
+  
+  isInterrupted = 1;    // set isInterrupted to 1 so in main loop we can start executing our code based on it 
+                                                                               
 }
-/* This function triggers after an ADC conversion is completed */
+
+/* This function triggers after an ADC conversion is completed 
+  (conversion happens inside change_led_behaviour_based_on_LED_state() function while LED_POTMETER_CONTROLLED_STATE is enabled) */
 ISR(ADC_vect){
   previousReadADCvalue = ADCH;     // previousReadADCvalue is set to reading of ADCH(ADC Conversion Result)
-  printf_P(PSTR("%d\n"),previousReadADCvalue); // value fluctuates with +30 sometimes. Bad Pot meter.
 }
 
 

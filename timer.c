@@ -1,10 +1,21 @@
 #include <avr/io.h>
-#include "timer.h"
 #include <avr/interrupt.h>
+#include "timer.h"
+
 
 /* Static variables to keep them even when exiting the scope of function */
 static uint8_t returnValue = 0;                
 static uint8_t isIncrementingBoolean = 1;
+
+void disable_OCR0A(){
+    /* OCR0A disconnected */
+    TCCR0A &= ~(1 << COM0A1);
+}
+
+void enable_OCR0A(){
+    /* OCR0A connected  */
+    TCCR0A |= (1 << COM0A1); 
+}
 
 void complete_timer_init(){
 
